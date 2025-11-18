@@ -7,9 +7,9 @@ import {
 import { asyncHandler } from "$middlewares/errorHandlerMiddleware";
 
 export class AuthController {
-  Register: RequestHandler = asyncHandler(
+  registerUser: RequestHandler = asyncHandler(
     async (req: Request, res: Response): Promise<Response> => {
-      const serviceResponse = await authService.Register(req.body);
+      const serviceResponse = await authService.registerUser(req.body);
       if (!serviceResponse.status) {
         return handleServiceErrorWithResponse(res, serviceResponse);
       }
@@ -20,10 +20,9 @@ export class AuthController {
       );
     }
   );
-
-  Login: RequestHandler = asyncHandler(
+  loginUser: RequestHandler = asyncHandler(
     async (req: Request, res: Response): Promise<Response> => {
-      const serviceResponse = await authService.Login(req.body);
+      const serviceResponse = await authService.loginUser(req.body);
       if (!serviceResponse.status) {
         return handleServiceErrorWithResponse(res, serviceResponse);
       }

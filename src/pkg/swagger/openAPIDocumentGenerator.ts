@@ -4,13 +4,18 @@ import {
 } from "@asteasolutions/zod-to-openapi";
 import { authRegistry } from "$routes/AuthRoute";
 import { modelsRegistry } from "$validations/domain/Models";
+import { employeeRegistry } from "$routes/EmployeeRoute";
 
 export type OpenAPIDocument = ReturnType<
   OpenApiGeneratorV3["generateDocument"]
 >;
 
 export function generateOpenAPIDocument(): OpenAPIDocument {
-  const registry = new OpenAPIRegistry([authRegistry, modelsRegistry]);
+  const registry = new OpenAPIRegistry([
+    authRegistry,
+    modelsRegistry,
+    employeeRegistry,
+  ]);
   const generator = new OpenApiGeneratorV3(registry.definitions);
 
   const documents = generator.generateDocument({

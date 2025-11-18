@@ -62,10 +62,10 @@ authRegistry.registerPath({
 authRouter.post(
   "/register",
   validateRequest({ body: RegisterRequestSchema }),
-  authController.Register
+  authController.registerUser
 );
 authRouter.post(
   "/login",
   validateRequest({ body: LoginRequestSchema }),
-  authController.Login
+  authController.loginUser
 );

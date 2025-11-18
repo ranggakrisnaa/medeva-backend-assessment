@@ -1,20 +1,19 @@
 import { LoginRequest, RegisterRequest } from "$validations/domain/Auth";
 import { BadRequestError } from "$entities/Error";
 import { User } from "@prisma/client";
-import { AuthRepository } from "../repositories/AuthRepository";
-import bcrypt from "bcrypt";
+import { UserRepository } from "../repositories/UserRepository";
 import { ServiceResponse } from "$entities/Service";
-import { BCRYPT } from "../constants/default";
 import { createToken } from "$utils/token.utils";
+import { comparePassword, hashPassword } from "$utils/hash.utils";
 
 export class AuthService {
-  private readonly authRepo: AuthRepository;
+  constructor(
+    private readonly authRepo: UserRepository = new UserRepository()
+  ) {}
 
-  constructor(initRepo = new AuthRepository()) {
-    this.authRepo = initRepo;
-  }
-
-  async Login(loginReqData: LoginRequest): Promise<ServiceResponse<unknown>> {
+  async loginUser(
+    loginReqData: LoginRequest
+  ): Promise<ServiceResponse<Record<string, string>>> {
     const existingUser = await this.authRepo.FindByEmail(loginReqData.email);
     if (!existingUser) {
       return {
@@ -23,7 +22,7 @@ export class AuthService {
       };
     }
 
-    const isPasswordValid = await bcrypt.compare(
+    const isPasswordValid = await comparePassword(
       loginReqData.password,
       existingUser.password
     );
@@ -49,7 +48,9 @@ export class AuthService {
     };
   }
 
-  async Register(registerDto: RegisterRequest): Promise<ServiceResponse<User>> {
+  async registerUser(
+    registerDto: RegisterRequest
+  ): Promise<ServiceResponse<User>> {
     const existingUser = await this.authRepo.CountByEmail(registerDto.email);
     if (existingUser !== 0) {
       return {
@@ -58,10 +59,7 @@ export class AuthService {
       };
     }
 
-    const hashedPassword = await bcrypt.hash(
-      registerDto.password,
-      BCRYPT.SALT_ROUNDS
-    );
+    const hashedPassword = await hashPassword(registerDto.password);
 
     const newUser = await this.authRepo.Create({
       email: registerDto.email,
