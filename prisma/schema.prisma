@@ -51,6 +51,7 @@ model Position {
   employees  Employee[]
 
   @@unique([name, departmentId])
+  @@index([departmentId])
   @@map("positions")
 }
 
@@ -71,5 +72,14 @@ model Employee {
   user     User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
   position Position @relation(fields: [positionId], references: [id], onDelete: Restrict)
 
+  // Indexes for filtering & searching
+  @@index([fullName])
+  @@index([positionId])
+  @@index([userId])
+  @@index([isActive])
+  @@index([createdAt])
+  // Composite indexes untuk common filter combinations
+  @@index([positionId, isActive])
+  @@index([isActive, createdAt(sort: Desc)])
   @@map("employees")
 }
