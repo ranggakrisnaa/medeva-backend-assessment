@@ -116,17 +116,11 @@ DELETE /api/v1/employees/{id}         # Delete employee (ADMIN only)
 #### Filtering & Pagination
 
 ```bash
-# Exact match (filters)
-curl 'http://localhost:3150/api/v1/employees?filters={"fullName":"Rangga","isActive":true}'
-
-# Partial search (searchFilters) - contains
-curl 'http://localhost:3150/api/v1/employees?searchFilters={"fullName":"Rangga"}'
+# Partial search - contains
+curl 'http://localhost:3150/api/v1/employees?search: "rangga"'
 
 # Pagination
-curl 'http://localhost:3150/api/v1/employees?page=1&rows=10'
-
-# Combined
-curl 'http://localhost:3150/api/v1/employees?filters={"isActive":true}&page=1&rows=10&orderKey=fullName&orderRule=asc'
+curl 'http://localhost:3150/api/v1/employees?page=1&limit=10'
 ```
 
 **Query Parameters:**
@@ -134,8 +128,8 @@ curl 'http://localhost:3150/api/v1/employees?filters={"isActive":true}&page=1&ro
 - `search`: Filter searchin
 - `page`: Halaman (default: g1)
 - `limit`: Items per halaman (default: 10)
-- `orderKey`: Field untuk sorting
-- `orderRule`: asc/desc
+- `sortBy`: Field untuk sorting
+- `sortOrder`: asc/desc
 
 **Field Aliases** (case-insensitive):
 
@@ -309,20 +303,6 @@ Department → Position → Employee: CASCADE
 - Redis adds operational complexity (infra, monitoring, cache invalidation)
 - Database indexing lebih cost-effective untuk dataset size kecil-medium
 - Filtering engine sudah optimize dengan Prisma
-
-**Indexes Implemented**:
-```sql
--- Employee table
-CREATE INDEX idx_employee_nik ON employees(nik);
-CREATE INDEX idx_employee_fullname ON employees(full_name);
-CREATE INDEX idx_employee_user_id ON employees(user_id);
-CREATE INDEX idx_employee_position_id ON employees(position_id);
-CREATE INDEX idx_employee_isactive ON employees(is_active);
-CREATE INDEX idx_employee_created_at ON employees(created_at);
-
--- Composite indexes untuk common filter combinations
-CREATE INDEX idx_employee_position_active ON employees(position_id, is_active);
-```
 
 **Trade-off**:
 - ✅ **Benefit**: Simple architecture, fast enough untuk typical queries, no cache invalidation headaches
