@@ -1,190 +1,414 @@
-# Express Boilerplate Repositories for Backend
+# Medeva Backend Assessment
 
+Backend REST API untuk sistem manajemen karyawan dengan fitur autentikasi, filtering dinamis, dan Swagger documentation.
 
-## Tech Stacks 
+## 📋 Tech Stack
 
-- Language : TypeScript 
-- ORM : Prisma 
-- Database : MySQL
-- HTTP Framework : Express 
-- Logging : Winston + Morgan
+- **Language**: TypeScript
+- **Framework**: Express.js
+- **ORM**: Prisma
+- **Database**: PostgreSQL
+- **Authentication**: JWT (Bearer Token)
+- **Logging**: Winston + Morgan
+- **Documentation**: Swagger/OpenAPI
+- **Containerization**: Docker + Docker Compose
+- **Package Manager**: pnpm
 
-> [!NOTE]  
->  As stated in Getting Started parts of our notion, don't forget to make sure that you have Node.js >= 16.14.2 and MySQL >= 8.0.3
+## 🚀 Quick Start
 
-## How to use
+### Prerequisites
 
-Clone this repository, and set up various things like :
+- Node.js >= 18.0
+- PostgreSQL >= 14
+- pnpm >= 8.0
+- Docker & Docker Compose (opsional)
 
-- change package.json structure
-- change auth mechanism to match project
-- update readme (delete this how to use part and change the title!)
+### Development Setup
 
-> [!IMPORTANT]  
->  Steps below are steps to run on project, this repo is only a base, not a fully runnable project, this repo only serve as a template! If you wish to try this repo and add more functionality, please create your own branch locally :)
+```bash
+# 1. Clone repository
+git clone <repo-url>
+cd backend
 
-## Steps To Run Project Locally
+# 2. Install dependencies
+pnpm install
 
-```
-git checkout develop
-```
-Install dependencies with :
+# 3. Setup environment variables
+cp example.env .env
 
-```powershell
-npm install
-```
+# Edit .env dengan konfigurasi lokal
+# DATABASE_URL=postgresql://user:password@localhost:5432/medeva_db
 
-Get .env value, and change db connection url in .env
+# 4. Setup database
+pnpm prisma migrate dev
 
-Run prisma db migration with :
+# 5. Seed data (optional)
+pnpm seed
 
-```powershell
-npx prisma migrate --name <migration_name>
-```
-Run seeder for admin user :
-
-  > [!IMPORTANT]  
-  > Delete this part on your repository in case there is no seeder available on your codebase.
-
-```powershell
-npm run seed
-```
-
-## Running The App 
-
-This base app was meant to have several different implementation, for now we just have a REST API Server, but if we happen to 
-have more like grpc, cron, or maybe pub-sub consumer, we can register it too the 
-`/app` and `/server` folder 
-
-and register the command into the `/src/index.ts` as the argument of choice 
-
-By Default, to run the app with hot-reload simply run 
-```
-npm run dev -- --service=rest
+# 6. Start development server
+pnpm dev
 ```
 
-If you want to start the build version, run it with : 
+Server akan berjalan di `http://localhost:3150`
+
+### Docker Setup
+
+```bash
+# 1. Build dan start services
+docker-compose up -d
+
+# 2. Run migrations
+docker-compose exec backend pnpm prisma migrate deploy
+
+# 3. Seed data (optional)
+docker-compose exec backend pnpm seed
+
+# Check logs
+docker-compose logs -f backend
+
+# Stop services
+docker-compose down
 ```
-npm start -- --service=rest
+
+## 🔧 Environment Variables
+
+```env
+# Server
+NODE_ENV=development
+PORT=3150
+SERVICE=rest
+
+# Database
+DATABASE_URL=postgresql://user:password@localhost:5432/medeva_db
+
+# JWT
+JWT_SECRET=your-super-secret-key-change-in-production
+JWT_EXPIRY=1h
+
+# Logging
+LOG_LEVEL=info
 ```
 
-## Creating new features / endpoint
+## 📚 API Endpoints
 
-- Branch out from develop
+### Authentication
+
 ```
-git checkout -b <branch_name>
+POST /api/v1/auth/register
+  body: { email, username, password }
+  response: { user, token }
+
+POST /api/v1/auth/login
+  body: { email/username, password }
+  response: { user, token }
 ```
-- Create a new schema (if needed) on prisma/schema.prisma
 
-- Migrate the schema with :
+### Employees
+
 ```
-npx prisma migrate --name <migration_name>
+GET    /api/v1/employees              # List all employees (with filtering)
+GET    /api/v1/employees/{id}         # Get employee by ID
+POST   /api/v1/employees              # Create employee (ADMIN only)
+PUT    /api/v1/employees/{id}         # Update employee (ADMIN only)
+DELETE /api/v1/employees/{id}         # Delete employee (ADMIN only)
 ```
 
-- Create new entity on `/entities` folder
+#### Filtering & Pagination
 
-- Create validation for that entities (for create and update if any) on `/validations` folder
+```bash
+# Exact match (filters)
+curl 'http://localhost:3150/api/v1/employees?filters={"fullName":"Rangga","isActive":true}'
 
-- Create the service layer on /services
+# Partial search (searchFilters) - contains
+curl 'http://localhost:3150/api/v1/employees?searchFilters={"fullName":"Rangga"}'
 
-- Link it into controller in /controllers
+# Pagination
+curl 'http://localhost:3150/api/v1/employees?page=1&rows=10'
 
-- Create new routes file instance at /routes, for example `ProductRoutes.ts`
+# Combined
+curl 'http://localhost:3150/api/v1/employees?filters={"isActive":true}&page=1&rows=10&orderKey=fullName&orderRule=asc'
+```
 
-- Register the routes into registry (`routes/registry.ts`)
+**Query Parameters:**
 
-- use the routes, with router.use(), for example :
+- `search`: Filter searchin
+- `page`: Halaman (default: g1)
+- `limit`: Items per halaman (default: 10)
+- `orderKey`: Field untuk sorting
+- `orderRule`: asc/desc
 
-  ```js
-  router.use("/products", RoutesRegistry.productRoutes);
-  ```
+**Field Aliases** (case-insensitive):
 
-- Test in postman and document it with example
+- `fullname` → `fullName`
+- `dateofbirth` → `dateOfBirth`
+- `placeofbirth` → `placeOfBirth`
 
+### Swagger Documentation
 
-## Folder Structures Brief Explanation 
+Akses dokumentasi interaktif di: `http://localhost:3150/api-docs`
 
-#### Apps and Servers 
+## 🏗️ Arsitektur
 
-- `/app` 
+```
+src/
+├── controllers/       # Request handlers
+├── services/          # Business logic
+├── repositories/      # Data access layer
+├── entities/          # Data models & interfaces
+├── middlewares/       # Express middlewares
+├── validations/       # Zod schemas
+├── routes/            # API routes definition
+├── types/             # TypeScript definitions
+├── utils/             # Helper functions
+├── pkg/               # Third-party integrations
+│   ├── logger/        # Winston logger
+│   ├── prisma/        # Prisma client
+│   └── swagger/       # OpenAPI generator
+└── index.ts           # Application entry point
+```
 
-  This contains app inilization for different communication protocol, files inside this directory is responsible to starting up the communcation protocol based server
+### Layer Responsibilities
 
-  Default app is rest, if you want to add more , you can add it by naming it something like `<protocol>.ts` , e.g. : `grpc.ts` , add it to instance.ts 
+- **Controllers** → Parse request, call service, return response
+- **Services** → Business logic, validation, error handling
+- **Repositories** → Database queries, data transformation
+- **Entities** → Type definitions (Error, Query, User, etc.)
+- **Middlewares** → Auth, validation, error handling, logging
 
-- `/server` 
-  
-  This contains server initialization for different communication 
-  protocol server, file inside this directory will responsible to hold the configuration needed, like the the server initialization, dependencies for this communcation protocol etc. 
+## ✨ Key Features
 
-  if you want to add more , you can add it by naming it something like `<protocol>.ts` , e.g. : `grpc.ts` , add it to the instance.ts 
+### 1. Role-Based Access Control
 
-> [!IMPORTANT]  
-> After you add both app and server, configure it to be receivable my the command line argument, by adding the app function and argument into the if condition inside `src/index.ts`
+- ADMIN: Full CRUD access
+- USER: Read-only access
+- Middleware-based role validation
 
-#### Entities 
+### 2. Comprehensive Error Handling
 
-- `/entity` 
+- Custom error classes (AppError, BadRequestError)
+- Prisma error mapping (P2002, P2025, etc.)
+- Zod validation error translation
+- Centralized error response formatting
 
-  Files inside this directory, will hold various `interfaces` or `types`, needed for data transfer and access (DTOs and DAOs), in this directory, we follow the Domain-Driven pattern, where it will easily transalates to each domain means each table on db. 
+### 3. Database Cascading
 
-  Or maybe in other case, you can also specify global types that is used everywhere in the code, like `Service.ts` that we currently have and `Query.ts` entities, this means to hold all types related to service responses and dynamic query arguments and also pagination result.
+Relasi antar entity dengan cascade delete:
 
+```
+User → Employee: CASCADE (hapus user, employee ikut dihapus)
+Department → Position → Employee: CASCADE
+```
 
-#### Packages and Utils
+### 4. Swagger/OpenAPI Integration
 
-- `/pkg` 
+- Auto-generated documentation dari Zod schemas
+- Interactive API testing di browser
+- Real-time spec updates
 
-  This dir is simple, you categorize 3rd party integration inside of this dir, you can also define types spesific to this 3rd party inside here, so the common practice is something like : 
-  ```
-    - pkg 
-        - package name 
-            - index.ts -> package instance (use singleton if possible please)
-            - interfaces.ts -> for package spesific typing 
-            - utils.ts  -> for utility functions
-            - ... methodspecific.ts -> for specific sub-functionality, e.g: coreAPI.ts in midtrans pkg only holds functions needed to do payment through midtrans's Core API
-  ```
+## 🔐 Authentication Flow
 
-  We make it in this structure so it will be clear that all of this belongs to specific 3rd party.
+```
+1. POST /auth/login → Get JWT token
+2. Set header: Authorization: Bearer <token>
+3. Middleware validasi token, extract user info
+4. Request proceed dengan user context
+```
 
-- `/utils` 
+**Token Payload:**
 
-  This dir will holds utility function that are needed for helpers globally, like string manipulation, dates manipulation etc 
+```json
+{
+  "id": "user-uuid",
+  "role": "ADMIN|USER",
+  "iat": 1234567890,
+  "exp": 1234571490
+}
+```
 
- 
-#### Controllers and Services 
+## 📊 Database Schema
 
- - `/controllers` 
-  Here, we also follow domain based filenaming, so each domain will have 1 controller, with the responsibility in controller, only limited to 
-    - Retrieve and parse the request.
-    - Call service function 
-    - Return the response.
+### Users
 
+- id (UUID, Primary Key)
+- email (String, Unique)
+- username (String, Unique)
+- password (String, Hashed with bcrypt)
+- role (Enum: USER, ADMIN)
+- createdAt, updatedAt
 
- - `/services`
+### Employees
 
-  Here, we also follow domain based file naming, each domain will have 1 services, and maybe 1 helper service if needed, with the responsibility in service is only to do business logics, calling the db (we don't use repository since prisma orm is already more or less like a repository in it's nature). Please never mix up 3rd party integration here, as we already have the package for that, unless the 3rd party will also have controllers (like midtrans callback).
+- id (UUID, Primary Key)
+- userId (UUID, FK to Users, Unique, CASCADE Delete)
+- nik (String, Unique, 16 chars)
+- fullName (String)
+- dateOfBirth (Date)
+- placeOfBirth (String)
+- address (Text)
+- phone (String)
+- positionId (UUID, FK to Positions, CASCADE Delete)
+- isActive (Boolean, default: true)
+- createdAt, updatedAt
 
+### Positions
 
-#### Routes, Validations and Middlewares
+- id (UUID, Primary Key)
+- name (String)
+- departmentId (UUID, FK to Departments, CASCADE Delete)
+- createdAt, updatedAt
 
-- `/routes` 
+### Departments
 
-  This folders mainly has 3 parts 
-  1. Domain based files ( e.g. : `ProductRoutes.ts` ), will contains all of the routings by domain 
-  2. `RoutesRegistry.ts`, we pool all the routes exports here 
-  3. index.ts -> we attach all the routes, pooled from `RoutesRegistry.ts` here
+- id (UUID, Primary Key)
+- name (String, Unique)
+- createdAt, updatedAt
 
-- `/validations` 
+## ⚠️ Trade-offs & Design Decisions
 
-  Domain based, serve as a middleware, contains validation for any operation that involves sending request body, normally you will create the validation here,
-  and use it on routes as a `middleware`.
- 
-  > [!WARNING]  
-  > Don't use validation function inside controllers because it will cause an error if you do so.
+### 1. **Query Key Tidak Fully Dynamic** 🔒
 
+**Issue**: Field filtering saat ini hanya support Employee model fields yang sudah di-hardcode di alias mapping. Client **tidak bisa query relational fields** seperti `user.email` atau `position.name` secara dinamis.
 
-- `/middlewares` 
+**Current Limitation**:
 
-  Here contains middlewares that can be used in the `/server/` directory or that can be used globally inside many routes, for example we have 
-  `authMiddleware` for JWT authentication, `morganMiddleware` for http logging.
+- ✅ Support: `fullName`, `nik`, `isActive`, `dateOfBirth` (direct fields)
+- ❌ Not Support: `user.email`, `position.name`, `department.name` (relational)
+
+**Why**: Prisma relational filtering lebih kompleks dan perlu join/include logic. Hardcoding lebih safe daripada allow arbitrary nested queries.
+
+**Trade-off**:
+
+- ✅ **Benefit**: More secure, prevent N+1 queries, easier to optimize
+- ❌ **Cost**: Less flexible, client harus request feature baru untuk each relational field
+
+**Future Improvement**:
+
+- Whitelist specific relational fields (e.g. `allowedRelations: ['user', 'position']`)
+- Support dot notation dengan auto include: `{ searchFilters: { 'position.name': 'Manager' } }`
+- Query complexity limit untuk prevent abuse
+
+### 2. **No Request Logging Body in Production** 🔒
+
+**Decision**: Log body hanya di development untuk security.
+
+**Benefit**: Hide sensitive data (password, token)
+**Cost**: Lebih susah debug production issues
+
+### 3. **JWT Expiry 1 Hour** ⏰
+
+**Decision**: Token expire dalam 1 jam untuk security.
+
+**Benefit**: Reduce token hijacking window
+**Cost**: User harus re-login lebih sering
+
+### 4. **No Redis Caching - Database Indexing Strategy** ⚡
+
+**Decision**: Tidak implement Redis caching layer. Fokus pada database optimization dengan strategic indexing.
+
+**Why**: 
+- Redis adds operational complexity (infra, monitoring, cache invalidation)
+- Database indexing lebih cost-effective untuk dataset size kecil-medium
+- Filtering engine sudah optimize dengan Prisma
+
+**Indexes Implemented**:
+```sql
+-- Employee table
+CREATE INDEX idx_employee_nik ON employees(nik);
+CREATE INDEX idx_employee_fullname ON employees(full_name);
+CREATE INDEX idx_employee_user_id ON employees(user_id);
+CREATE INDEX idx_employee_position_id ON employees(position_id);
+CREATE INDEX idx_employee_isactive ON employees(is_active);
+CREATE INDEX idx_employee_created_at ON employees(created_at);
+
+-- Composite indexes untuk common filter combinations
+CREATE INDEX idx_employee_position_active ON employees(position_id, is_active);
+```
+
+**Trade-off**:
+- ✅ **Benefit**: Simple architecture, fast enough untuk typical queries, no cache invalidation headaches
+- ❌ **Cost**: Database disk usage (indexes), slower for extremely large datasets (>1M rows)
+
+**When to Add Redis**:
+- Query response time > 500ms for common filters
+- Same queries executed 100+ times per hour
+- High concurrent load (>100 RPS)
+
+**Implementation Path** (Future):
+1. Add `ioredis` to package.json
+2. Create `pkg/redis/` module with singleton pattern
+3. Implement cache layer in repository methods
+4. Add cache invalidation on CREATE/UPDATE/DELETE
+
+## 🧪 Testing
+
+```bash
+# Run tests
+pnpm test
+
+# Watch mode
+pnpm test:watch
+
+# Coverage
+pnpm test:coverage
+```
+
+## 📦 Build & Deploy
+
+```bash
+# Build TypeScript
+pnpm build
+
+# Start production server
+pnpm start
+
+# Or dengan Docker
+docker-compose up -d
+```
+
+## 🔍 Debugging
+
+### Enable debug logging
+
+```env
+LOG_LEVEL=debug
+```
+
+### View Prisma queries
+
+```env
+DEBUG=prisma:*
+```
+
+### Inspect database
+
+```bash
+pnpm prisma studio
+```
+
+## 📝 Scripts
+
+```bash
+pnpm dev              # Start dev server dengan hot-reload
+pnpm build            # Compile TypeScript
+pnpm start            # Run production build
+pnpm test             # Run unit tests
+pnpm seed             # Seed database
+pnpm prisma migrate   # Run migrations
+pnpm prisma studio    # Open Prisma Studio UI
+pnpm format           # Format code
+pnpm typecheck        # Check TypeScript types
+```
+
+## 🚨 Known Issues & Limitations
+
+1. **No Request Rate Limiting** - Gunakan reverse proxy (nginx) atau library (express-rate-limit)
+2. **No CORS Whitelist** - Set CORS_ORIGIN di production
+3. **Single Database Connection** - Perlu connection pooling untuk high traffic
+
+## 👤 Author
+
+Rangga Kristna
+
+---
+
+**Last Updated**: November 19, 2025
