@@ -1,0 +1,33 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "ES2022",
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "typeRoots": ["./node_modules/@types", "./src/types"],
+    "strict": true,
+    "noUnusedLocals": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "moduleResolution": "node",
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "baseUrl": "src",
+    "paths": {
+      "$routes/*": ["routes/*"],
+      "$controllers/*": ["controllers/*"],
+      "$services/*": ["services/*"],
+      "$validations/*": ["validations/*"],
+      "$utils/*": ["utils/*"],
+      "$entities/*": ["entities/*"],
+      "$middlewares/*": ["middlewares/*"],
+      "$seeders/*": ["seeders/*"],
+      "$config/*": ["config/*"],
+      "$pkg/*": ["pkg/*"],
+      "$app/*": ["app/*"],
+      "$server/*": ["server/*"]
+    }
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules/*", "dist/*", "prisma/*", "prisma/seeds/*"]
+}

@@ -1,0 +1,167 @@
+{
+  "departments": [
+    {
+      "name": "Pelayanan Medis",
+      "positions": [
+        "Dokter Spesialis",
+        "Dokter Umum",
+        "Dokter Jaga",
+        "Kepala Departemen Medis"
+      ]
+    },
+    {
+      "name": "Keperawatan",
+      "positions": [
+        "Kepala Perawat",
+        "Perawat Senior",
+        "Perawat",
+        "Perawat Praktisi",
+        "Perawat IGD"
+      ]
+    },
+    {
+      "name": "Instalasi Gawat Darurat",
+      "positions": [
+        "Kepala Unit Gawat Darurat",
+        "Dokter IGD",
+        "Perawat IGD",
+        "Paramedis"
+      ]
+    },
+    {
+      "name": "Farmasi",
+      "positions": [
+        "Kepala Farmasi",
+        "Apoteker",
+        "Asisten Apoteker",
+        "Administrasi Farmasi"
+      ]
+    },
+    {
+      "name": "Laboratorium",
+      "positions": [
+        "Kepala Laboratorium",
+        "Analis Laboratorium Senior",
+        "Analis Laboratorium",
+        "Teknisi Laboratorium"
+      ]
+    },
+    {
+      "name": "Radiologi",
+      "positions": [
+        "Kepala Radiologi",
+        "Dokter Radiologi",
+        "Radiografer",
+        "Teknisi Radiologi"
+      ]
+    },
+    {
+      "name": "Bedah",
+      "positions": [
+        "Dokter Bedah",
+        "Perawat Bedah",
+        "Asisten Bedah",
+        "Koordinator Ruang Operasi"
+      ]
+    },
+    {
+      "name": "Intensive Care Unit",
+      "positions": [
+        "Kepala ICU",
+        "Dokter Intensivis",
+        "Perawat ICU",
+        "Terapis Pernapasan"
+      ]
+    },
+    {
+      "name": "Rawat Jalan",
+      "positions": [
+        "Kepala Poliklinik",
+        "Dokter Poliklinik",
+        "Perawat Poliklinik",
+        "Administrasi Poliklinik"
+      ]
+    },
+    {
+      "name": "Rekam Medis",
+      "positions": [
+        "Kepala Rekam Medis",
+        "Petugas Rekam Medis",
+        "Koder Medis",
+        "Arsiparis"
+      ]
+    },
+    {
+      "name": "Keuangan",
+      "positions": [
+        "Kepala Keuangan",
+        "Manajer Keuangan",
+        "Akuntan",
+        "Petugas Billing",
+        "Kasir"
+      ]
+    },
+    {
+      "name": "Sumber Daya Manusia",
+      "positions": [
+        "Manajer SDM",
+        "Staff SDM",
+        "Petugas Rekrutmen",
+        "Administrasi Payroll"
+      ]
+    },
+    {
+      "name": "Teknologi Informasi",
+      "positions": [
+        "Manajer IT",
+        "Administrator Sistem",
+        "Network Engineer",
+        "IT Support",
+        "Administrator Database"
+      ]
+    },
+    {
+      "name": "Kebersihan",
+      "positions": [
+        "Supervisor Kebersihan",
+        "Petugas Kebersihan",
+        "Petugas Laundry"
+      ]
+    },
+    {
+      "name": "Keamanan",
+      "positions": [
+        "Kepala Keamanan",
+        "Petugas Keamanan",
+        "Operator CCTV"
+      ]
+    },
+    {
+      "name": "Gizi",
+      "positions": [
+        "Kepala Gizi",
+        "Ahli Gizi",
+        "Juru Masak",
+        "Petugas Distribusi Makanan"
+      ]
+    },
+    {
+      "name": "Fisioterapi",
+      "positions": [
+        "Kepala Fisioterapi",
+        "Fisioterapis",
+        "Asisten Fisioterapis"
+      ]
+    },
+    {
+      "name": "Administrasi",
+      "positions": [
+        "Direktur Rumah Sakit",
+        "Wakil Direktur",
+        "Sekretaris",
+        "Administrasi Umum",
+        "Resepsionis"
+      ]
+    }
+  ]
+}
