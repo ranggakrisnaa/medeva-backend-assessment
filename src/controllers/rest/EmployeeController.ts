@@ -7,9 +7,9 @@ import {
 import { Request, RequestHandler, Response } from "express";
 
 export class EmployeeController {
-  CreateEmployee: RequestHandler = asyncHandler(
+  createEmployee: RequestHandler = asyncHandler(
     async (req: Request, res: Response): Promise<Response> => {
-      const serviceResponse = await employeeService.CreateEmployee();
+      const serviceResponse = await employeeService.createEmployee(req.body);
       if (!serviceResponse.status) {
         return handleServiceErrorWithResponse(res, serviceResponse);
       }
@@ -17,6 +17,65 @@ export class EmployeeController {
         res,
         serviceResponse,
         "Employee created successfully"
+      );
+    }
+  );
+  getAllEmployees: RequestHandler = asyncHandler(
+    async (req: Request, res: Response): Promise<Response> => {
+      const serviceResponse = await employeeService.getAllEmployees(req.query);
+      if (!serviceResponse.status) {
+        return handleServiceErrorWithResponse(res, serviceResponse);
+      }
+      return response_success(
+        res,
+        serviceResponse,
+        "Employees retrieved successfully"
+      );
+    }
+  );
+  getEmployeeById: RequestHandler = asyncHandler(
+    async (req: Request, res: Response): Promise<Response> => {
+      const serviceResponse = await employeeService.getEmployeeById(
+        req.params.id
+      );
+      if (!serviceResponse.status) {
+        return handleServiceErrorWithResponse(res, serviceResponse);
+      }
+      return response_success(
+        res,
+        serviceResponse,
+        "Employee retrieved successfully"
+      );
+    }
+  );
+  updateEmployee: RequestHandler = asyncHandler(
+    async (req: Request, res: Response): Promise<Response> => {
+      const serviceResponse = await employeeService.updateEmployee(
+        req.params.id,
+        req.body
+      );
+      if (!serviceResponse.status) {
+        return handleServiceErrorWithResponse(res, serviceResponse);
+      }
+      return response_success(
+        res,
+        serviceResponse,
+        "Employee updated successfully"
+      );
+    }
+  );
+  deleteEmployee: RequestHandler = asyncHandler(
+    async (req: Request, res: Response): Promise<Response> => {
+      const serviceResponse = await employeeService.deleteEmployee(
+        req.params.id
+      );
+      if (!serviceResponse.status) {
+        return handleServiceErrorWithResponse(res, serviceResponse);
+      }
+      return response_success(
+        res,
+        serviceResponse,
+        "Employee deleted successfully"
       );
     }
   );

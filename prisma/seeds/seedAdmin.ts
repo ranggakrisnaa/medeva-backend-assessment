@@ -1,6 +1,5 @@
 import { PrismaClient, Role } from "@prisma/client";
-import * as bcrypt from "bcrypt";
-import { BCRYPT } from "../../src/constants/default";
+import { hashPassword } from "../../src/utils/hash.utils";
 
 export async function seedAdmin(prisma: PrismaClient) {
   console.log("Starting admin seeding...");
@@ -11,7 +10,7 @@ export async function seedAdmin(prisma: PrismaClient) {
   });
 
   if (countAdmin === 0) {
-    const hashedPassword = await bcrypt.hash("admin123", BCRYPT.SALT_ROUNDS);
+    const hashedPassword = await hashPassword("admin123");
 
     await prisma.user.create({
       data: {

@@ -52,12 +52,11 @@ export const PositionSchema = z
 export const EmployeeSchema = z
   .object({
     id: z
-      .string()
       .uuid()
       .optional()
       .openapi({ example: "b2f7b1a1-2c3d-4e5f-8a9b-1c2d3e4f5a6b" }),
-    userId: z.string().uuid().nullable().optional().openapi({ example: null }),
-    nik: z.string().openapi({ example: "EMP-2025-0001" }),
+    userId: z.uuid().nullable().optional().openapi({ example: null }),
+    nik: z.string().min(16).openapi({ example: "3501012000000001" }),
     fullName: z.string().openapi({ example: "Budi Santoso" }),
     placeOfBirth: z
       .string()
@@ -82,14 +81,6 @@ export const EmployeeSchema = z
     positionId: z
       .uuid()
       .openapi({ example: "e5c0d2e2-6d9f-4b2a-b1b8-4d6a0b6a5e9f" }),
-    departmentId: z
-      .uuid()
-      .openapi({ example: "8b7a2f26-6b7c-4a0b-9a6e-0e6c2f1a2b3c" }),
-    avatarUrl: z
-      .url()
-      .nullable()
-      .optional()
-      .openapi({ example: "https://example.com/avatar.png" }),
     isActive: z.boolean().optional().openapi({ example: true }),
     createdAt: z.iso
       .datetime()

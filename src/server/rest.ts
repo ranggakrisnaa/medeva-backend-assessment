@@ -9,6 +9,7 @@ import { response_success } from "$utils/response.utils";
 import { openAPIRouter } from "$pkg/swagger/openAPIRouter";
 import { authRouter } from "$routes/AuthRoute";
 import { env } from "$utils/config.utils";
+import { employeeRouter } from "$routes/EmployeeRoute";
 
 export default function createRestServer() {
   let allowedOrigins: string[] = ["*"];
@@ -32,6 +33,7 @@ export default function createRestServer() {
   app.use("/api/v1", v1Routes);
 
   v1Routes.use("/auth", authRouter);
+  v1Routes.use("/employees", employeeRouter);
 
   app.use(notFoundHandler);
   app.use(errorHandlerMiddleware);

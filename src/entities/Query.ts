@@ -61,5 +61,7 @@ export interface FilteringQueryV2<T = unknown> {
 export interface PagedList<T> {
   entries: T;
   totalData: number;
-  totalPage: number;
+  totalPages: number;
+  dataPerPage: number;
+  page: number;
 }

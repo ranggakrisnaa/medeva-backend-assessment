@@ -38,7 +38,7 @@ export const authMiddleware = async (
   next();
 };
 
-export const roleMiddleware = (roles: string[]) => {
+export const roleMiddleware = (...roles: string[]) => {
   return (req: Request, res: Response, next: NextFunction) => {
     if (!req.user || !roles.includes(req.user.role)) {
       return handleServiceErrorWithResponse(res, {
