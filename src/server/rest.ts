@@ -10,6 +10,7 @@ import { openAPIRouter } from "$pkg/swagger/openAPIRouter";
 import { authRouter } from "$routes/AuthRoute";
 import { env } from "$utils/config.utils";
 import { employeeRouter } from "$routes/EmployeeRoute";
+import { departmentRouter } from "$routes/DerpartmentRoute";
 
 export default function createRestServer() {
   let allowedOrigins: string[] = ["*"];
@@ -34,6 +35,7 @@ export default function createRestServer() {
 
   v1Routes.use("/auth", authRouter);
   v1Routes.use("/employees", employeeRouter);
+  v1Routes.use("/departments", departmentRouter);
 
   app.use(notFoundHandler);
   app.use(errorHandlerMiddleware);

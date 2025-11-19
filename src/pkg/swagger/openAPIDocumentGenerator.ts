@@ -5,6 +5,7 @@ import {
 import { authRegistry } from "$routes/AuthRoute";
 import { modelsRegistry } from "$validations/domain/Models";
 import { employeeRegistry } from "$routes/EmployeeRoute";
+import { departementRegistry } from "$routes/DerpartmentRoute";
 
 export type OpenAPIDocument = ReturnType<
   OpenApiGeneratorV3["generateDocument"]
@@ -15,6 +16,7 @@ export function generateOpenAPIDocument(): OpenAPIDocument {
     authRegistry,
     modelsRegistry,
     employeeRegistry,
+    departementRegistry,
   ]);
   const generator = new OpenApiGeneratorV3(registry.definitions);
 

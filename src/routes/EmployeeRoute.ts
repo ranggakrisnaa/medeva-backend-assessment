@@ -146,6 +146,7 @@ employeeRouter.get(
   "/",
   authMiddleware,
   roleMiddleware(Role.ADMIN, Role.USER),
+  validateRequest({ query: QueryEmployeeSchema }),
   employeeController.getAllEmployees
 );
 
