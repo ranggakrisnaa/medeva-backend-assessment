@@ -11,16 +11,13 @@ RUN npm install -g pnpm
 # Copy package files
 COPY package.json pnpm-lock.yaml ./
 
-# Install all dependencies
+# Install deps
 RUN pnpm install --frozen-lockfile
 
-# Copy app source
+# Copy source
 COPY . .
 
-# Generate Prisma client (WAJIB agar TS mengenal PrismaClient dan model)
-RUN npx prisma generate
-
-# Build TypeScript
+# Build TS
 RUN pnpm build
 
 # -------------------
@@ -30,31 +27,27 @@ FROM node:20-alpine
 
 WORKDIR /app
 
-# Install pnpm (untuk runtime scripts jika perlu)
 RUN npm install -g pnpm
 
 # Copy package files
 COPY package.json pnpm-lock.yaml ./
 
-# Copy node_modules hasil build
-COPY --from=builder /app/node_modules ./node_modules
-
-# Copy generated Prisma client
-COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
-COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
+# Install only production deps
+RUN pnpm install --frozen-lockfile --prod
 
 # Copy built dist
 COPY --from=builder /app/dist ./dist
 
-# Copy prisma schema (hanya jika runtime membutuhkan migration / introspection)
+# Copy prisma schema
 COPY prisma ./prisma
+
+# Generate Prisma client in runtime
+RUN npx prisma generate
 
 # Add non-root user
 RUN addgroup -g 1001 -S nodejs && adduser -S nodejs -u 1001
 USER nodejs
 
-# Expose port
 EXPOSE 3150
 
-# Command
 CMD ["node", "dist/index.js", "--service=rest"]
