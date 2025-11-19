@@ -3,51 +3,48 @@ FROM node:20-alpine AS builder
 
 WORKDIR /app
 
+# Install pnpm
+RUN npm install -g pnpm
+
 # Copy package files
 COPY package.json pnpm-lock.yaml ./
 
-# Install pnpm and dependencies
-RUN npm install -g pnpm && \
-    pnpm install --frozen-lockfile
+# Install all deps
+RUN pnpm install --frozen-lockfile
 
-# Copy source code
+# Copy app source
 COPY . .
 
-# Build TypeScript
+# Build typescript
 RUN pnpm build
+
 
 # Runtime stage
 FROM node:20-alpine
 
 WORKDIR /app
 
-# Install pnpm in runtime image
 RUN npm install -g pnpm
 
-# Copy package files
+# Copy only needed files
 COPY package.json pnpm-lock.yaml ./
 
-# Copy prisma schema
-COPY prisma ./prisma
+# Copy node_modules hasil build (lebih aman daripada install ulang)
+COPY --from=builder /app/node_modules ./node_modules
 
-# Set dummy DATABASE_URL for Prisma generation
-ENV DATABASE_URL="postgresql://dummy:dummy@localhost:5432/dummy"
+# Copy prisma client
+COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
+COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
 
-# Install production dependencies (Prisma will generate)
-RUN pnpm install --frozen-lockfile --prod
-
-# Copy built application from builder
+# Copy built dist
 COPY --from=builder /app/dist ./dist
 
-# Create non-root user
-RUN addgroup -g 1001 -S nodejs && \
-    adduser -S nodejs -u 1001
+# Copy prisma schema for migrations if needed
+COPY prisma ./prisma
 
+# Add non-root user
+RUN addgroup -g 1001 -S nodejs && adduser -S nodejs -u 1001
 USER nodejs
-
-# Health check
-HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD node -e "require('http').get('http://localhost:3150/health', (r) => {if (r.statusCode !== 200) throw new Error(r.statusCode)})"
 
 EXPOSE 3150
 
