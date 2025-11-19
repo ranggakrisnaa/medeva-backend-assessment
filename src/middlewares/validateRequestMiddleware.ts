@@ -12,10 +12,14 @@ export const validateRequest = (schema: {
         req.body = await schema.body.parseAsync(req.body);
       }
       if (schema.query) {
-        req.query = await schema.query.parseAsync(req.query);
+        const validatedQuery = await schema.query.parseAsync(req.query);
+        // Merge validated query back to req.query using Object.assign
+        Object.assign(req.query, validatedQuery);
       }
       if (schema.params) {
-        req.params = await schema.params.parseAsync(req.params);
+        const validatedParams = await schema.params.parseAsync(req.params);
+        // Merge validated params back to req.params using Object.assign
+        Object.assign(req.params, validatedParams);
       }
 
       return next();

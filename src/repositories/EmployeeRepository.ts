@@ -43,25 +43,32 @@ export class EmployeeRepository {
   }
 
   async FindAll(query: QueryEmployee): Promise<PagedList<Employee[]>> {
+    const dataPerPage = Math.max(-1, parseInt(query.limit ?? "10") || 10);
+    const page = Math.max(1, parseInt(query.page ?? "1") || 1);
+    const isUnlimited = dataPerPage === -1;
+    const take = isUnlimited ? undefined : Math.max(1, dataPerPage);
+    const skip = isUnlimited ? 0 : Math.max(0, (page - 1) * dataPerPage);
+
     const filters = this.buildQueryFilter(query);
     const sort = this.buildSortOption(query);
 
     const [employees, totalData] = await Promise.all([
-      prisma.employee.findMany({ where: filters, orderBy: sort }),
+      prisma.employee.findMany({
+        where: filters,
+        orderBy: sort,
+        skip,
+        take,
+      }),
       prisma.employee.count({
         where: filters,
       }),
     ]);
 
-    const dataPerPage = query.limit ?? 10;
-    const page = query.page ?? 1;
-    const totalPages = Math.ceil(totalData / dataPerPage);
-
     return {
       entries: employees,
-      page,
-      dataPerPage,
-      totalPages,
+      page: isUnlimited ? 1 : page,
+      dataPerPage: isUnlimited ? totalData : dataPerPage,
+      totalPages: isUnlimited ? 1 : Math.ceil(totalData / dataPerPage),
       totalData,
     };
   }

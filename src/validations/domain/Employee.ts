@@ -6,8 +6,8 @@ import { commonValidations } from "$utils/uuid_validate.utils";
 extendZodWithOpenApi(z);
 
 export const BaseQuerySchema = z.object({
-  limit: z.number().optional().openapi({ example: 10 }),
-  page: z.number().optional().openapi({ example: 1 }),
+  limit: z.string().optional().openapi({ example: 10 }),
+  page: z.string().optional().openapi({ example: 1 }),
 });
 
 export const GetEmployeeByIdSchema = z.object({
