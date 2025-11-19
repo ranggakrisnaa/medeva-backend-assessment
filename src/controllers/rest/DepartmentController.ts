@@ -18,7 +18,7 @@ export class DepartmentController {
 
       return response_success(
         res,
-        serviceResponse,
+        serviceResponse.data,
         "Departements retrieved successfully"
       );
     }
@@ -35,7 +35,7 @@ export class DepartmentController {
 
       return response_success(
         res,
-        serviceResponse,
+        serviceResponse.data,
         "Positions retrieved successfully"
       );
     }

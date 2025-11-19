@@ -60,7 +60,10 @@ export class EmployeeService {
     id: string,
     updateEmployeeDto: UpdateEmployeeRequest
   ): Promise<ServiceResponse<unknown>> {
-    const userData = await this.userRepository.FindById(id);
+    const employee = await this.employeeRepository.FindById(id);
+    if (!employee) {
+      throw new BadRequestError("Employee not found");
+    }
 
     await this.validateEmployeeData(
       updateEmployeeDto.employee?.positionId ?? undefined,
@@ -71,7 +74,7 @@ export class EmployeeService {
     await this.validateUserData(
       updateEmployeeDto.user?.username ?? undefined,
       updateEmployeeDto.user?.email ?? undefined,
-      userData?.id
+      employee.userId ?? undefined
     );
 
     const result = await this.employeeRepository.Update(id, updateEmployeeDto);

@@ -15,7 +15,7 @@ export class EmployeeController {
       }
       return response_success(
         res,
-        serviceResponse,
+        serviceResponse.data,
         "Employee created successfully"
       );
     }
@@ -28,7 +28,7 @@ export class EmployeeController {
       }
       return response_success(
         res,
-        serviceResponse,
+        serviceResponse.data,
         "Employees retrieved successfully"
       );
     }
@@ -43,7 +43,7 @@ export class EmployeeController {
       }
       return response_success(
         res,
-        serviceResponse,
+        serviceResponse.data,
         "Employee retrieved successfully"
       );
     }
@@ -59,7 +59,7 @@ export class EmployeeController {
       }
       return response_success(
         res,
-        serviceResponse,
+        serviceResponse.data,
         "Employee updated successfully"
       );
     }
@@ -74,7 +74,7 @@ export class EmployeeController {
       }
       return response_success(
         res,
-        serviceResponse,
+        serviceResponse.data,
         "Employee deleted successfully"
       );
     }

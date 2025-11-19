@@ -58,6 +58,21 @@ export class EmployeeRepository {
         orderBy: sort,
         skip,
         take,
+        include: {
+          position: {
+            include: {
+              department: true,
+            },
+          },
+          user: {
+            select: {
+              id: true,
+              email: true,
+              username: true,
+              role: true,
+            },
+          },
+        },
       }),
       prisma.employee.count({
         where: filters,
@@ -82,6 +97,12 @@ export class EmployeeRepository {
 
     if (query.positionId) {
       filter.positionId = query.positionId;
+    }
+
+    if (query.departmentId) {
+      filter.position = {
+        departmentId: query.departmentId,
+      };
     }
 
     if (query.search) {
@@ -118,7 +139,24 @@ export class EmployeeRepository {
   }
 
   FindById(id: string) {
-    return this.employeeModel.findUnique({ where: { id } });
+    return this.employeeModel.findUnique({
+      where: { id },
+      include: {
+        position: {
+          include: {
+            department: true,
+          },
+        },
+        user: {
+          select: {
+            id: true,
+            email: true,
+            username: true,
+            role: true,
+          },
+        },
+      },
+    });
   }
 
   Update(id: string, data: UpdateEmployeeRequest) {

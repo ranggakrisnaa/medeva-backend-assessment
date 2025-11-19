@@ -15,7 +15,7 @@ export class AuthController {
       }
       return response_success(
         res,
-        serviceResponse,
+        serviceResponse.data,
         "User registered successfully"
       );
     }
@@ -28,8 +28,31 @@ export class AuthController {
       }
       return response_success(
         res,
-        serviceResponse,
+        serviceResponse.data,
         "User logged in successfully"
+      );
+    }
+  );
+
+  getCurrentUser: RequestHandler = asyncHandler(
+    async (req: Request, res: Response): Promise<Response> => {
+      const userId = req.user?.id;
+      if (!userId) {
+        return res.status(401).json({
+          message: "Unauthorized",
+          content: null,
+          errors: ["User not authenticated"],
+        });
+      }
+
+      const serviceResponse = await authService.getCurrentUser(userId);
+      if (!serviceResponse.status) {
+        return handleServiceErrorWithResponse(res, serviceResponse);
+      }
+      return response_success(
+        res,
+        serviceResponse.data,
+        "User retrieved successfully"
       );
     }
   );
