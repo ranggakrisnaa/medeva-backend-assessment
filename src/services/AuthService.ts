@@ -16,10 +16,7 @@ export class AuthService {
   ): Promise<ServiceResponse<Record<string, string>>> {
     const existingUser = await this.authRepo.FindByEmail(loginReqData.email);
     if (!existingUser) {
-      return {
-        status: false,
-        err: new BadRequestError("Invalid credentials").toServiceError(),
-      };
+      throw new BadRequestError("Invalid credentials");
     }
 
     const isPasswordValid = await comparePassword(
@@ -28,10 +25,7 @@ export class AuthService {
     );
 
     if (!isPasswordValid) {
-      return {
-        status: false,
-        err: new BadRequestError("Invalid credentials").toServiceError(),
-      };
+      throw new BadRequestError("Invalid credentials");
     }
 
     const accessToken = createToken({
@@ -53,10 +47,7 @@ export class AuthService {
   ): Promise<ServiceResponse<User>> {
     const existingUser = await this.authRepo.CountByEmail(registerDto.email);
     if (existingUser !== 0) {
-      return {
-        status: false,
-        err: new BadRequestError("Email already in use").toServiceError(),
-      };
+      throw new BadRequestError("Email already in use");
     }
 
     const hashedPassword = await hashPassword(registerDto.password);
@@ -71,6 +62,25 @@ export class AuthService {
     return {
       status: true,
       data: newUser,
+    };
+  }
+
+  async getCurrentUser(
+    userId: string
+  ): Promise<ServiceResponse<Omit<User, "password">>> {
+    const user = await this.authRepo.FindById(userId);
+    if (!user) {
+      return {
+        status: false,
+        err: new BadRequestError("User not found").toServiceError(),
+      };
+    }
+
+    const { password, ...userWithoutPassword } = user;
+
+    return {
+      status: true,
+      data: userWithoutPassword,
     };
   }
 }

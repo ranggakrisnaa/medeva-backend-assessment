@@ -6,6 +6,7 @@ import {
   RegisterRequestSchema,
 } from "$validations/domain/Auth";
 import { authController } from "$controllers/rest";
+import { authMiddleware } from "$middlewares/authMiddleware";
 
 export const authRegistry = new OpenAPIRegistry();
 export const authRouter: Router = express.Router({ mergeParams: true });
@@ -59,6 +60,23 @@ authRegistry.registerPath({
   tags: ["Authentication"],
 });
 
+authRegistry.registerPath({
+  method: "get",
+  path: "/auth/me",
+  description: "Get current authenticated user",
+  summary: "Get current user",
+  security: [{ bearerAuth: [] }],
+  responses: {
+    200: {
+      description: "User retrieved successfully",
+    },
+    401: {
+      description: "Unauthorized",
+    },
+  },
+  tags: ["Authentication"],
+});
+
 authRouter.post(
   "/register",
   validateRequest({ body: RegisterRequestSchema }),
@@ -69,3 +87,4 @@ authRouter.post(
   validateRequest({ body: LoginRequestSchema }),
   authController.loginUser
 );
+authRouter.get("/me", authMiddleware, authController.getCurrentUser);

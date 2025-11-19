@@ -24,6 +24,10 @@ export const QueryEmployeeSchema = BaseQuerySchema.extend({
     .uuid()
     .optional()
     .openapi({ example: "e5c0d2e2-6d9f-4a2a-b1b8-4d6a0b6a5e9f" }),
+  departmentId: z
+    .uuid()
+    .optional()
+    .openapi({ example: "e5c0d2e2-6d9f-4a2a-b1b8-4d6a0b6a5e9f" }),
   sortBy: z
     .enum(["fullName", "nik", "createdAt", "updatedAt"])
     .optional()
