@@ -117,25 +117,65 @@ DELETE /api/v1/employees/{id}         # Delete employee (ADMIN only)
 
 ```bash
 # Partial search - contains
-curl 'http://localhost:3150/api/v1/employees?search: "rangga"'
+curl 'http://localhost:3150/api/v1/employees?search=rangga'
 
-# Pagination
+# Pagination with limit 10 per page
 curl 'http://localhost:3150/api/v1/employees?page=1&limit=10'
+
+# Get all employees (unlimited)
+curl 'http://localhost:3150/api/v1/employees?limit=-1'
+
+# Sorting
+curl 'http://localhost:3150/api/v1/employees?sortBy=fullName&sortOrder=asc'
+
+# Filter by position
+curl 'http://localhost:3150/api/v1/employees?positionId=<uuid>'
+
+# Filter by status
+curl 'http://localhost:3150/api/v1/employees?status=active'
 ```
 
 **Query Parameters:**
 
-- `search`: Filter searchin
-- `page`: Halaman (default: g1)
-- `limit`: Items per halaman (default: 10)
-- `sortBy`: Field untuk sorting
-- `sortOrder`: asc/desc
+- `search`: Filter search (contains, case-insensitive)
+- `page`: Halaman (default: 1)
+- `limit`: Items per halaman (default: 10, use `-1` for unlimited)
+- `sortBy`: Field untuk sorting (fullName, nik, createdAt, updatedAt)
+- `sortOrder`: asc/desc (default: asc)
+- `positionId`: Filter by position UUID
+- `status`: Filter by status (active/inactive)
 
 **Field Aliases** (case-insensitive):
 
 - `fullname` → `fullName`
 - `dateofbirth` → `dateOfBirth`
 - `placeofbirth` → `placeOfBirth`
+
+### Departments
+
+```
+GET    /api/v1/departments                      # List all departments
+GET    /api/v1/departments/{id}/positions       # Get position department ID
+```
+
+#### Filtering & Pagination
+
+```bash
+# List departments with pagination
+curl 'http://localhost:3150/api/v1/departments?page=1&limit=10'
+
+# Get all departments (unlimited)
+curl 'http://localhost:3150/api/v1/departments?limit=-1'
+
+# Search department
+curl 'http://localhost:3150/api/v1/departments?search=IT'
+```
+
+**Query Parameters:**
+
+- `search`: Search department name (case-insensitive)
+- `page`: Halaman (default: 1)
+- `limit`: Items per halaman (default: 10, use `-1` for unlimited)
 
 ### Swagger Documentation
 
@@ -299,21 +339,25 @@ Department → Position → Employee: CASCADE
 
 **Decision**: Tidak implement Redis caching layer. Fokus pada database optimization dengan strategic indexing.
 
-**Why**: 
+**Why**:
+
 - Redis adds operational complexity (infra, monitoring, cache invalidation)
 - Database indexing lebih cost-effective untuk dataset size kecil-medium
 - Filtering engine sudah optimize dengan Prisma
 
 **Trade-off**:
+
 - ✅ **Benefit**: Simple architecture, fast enough untuk typical queries, no cache invalidation headaches
 - ❌ **Cost**: Database disk usage (indexes), slower for extremely large datasets (>1M rows)
 
 **When to Add Redis**:
+
 - Query response time > 500ms for common filters
 - Same queries executed 100+ times per hour
 - High concurrent load (>100 RPS)
 
 **Implementation Path** (Future):
+
 1. Add `ioredis` to package.json
 2. Create `pkg/redis/` module with singleton pattern
 3. Implement cache layer in repository methods
