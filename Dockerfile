@@ -11,13 +11,16 @@ RUN npm install -g pnpm
 # Copy package files
 COPY package.json pnpm-lock.yaml ./
 
-# Install deps
+# Install all dependencies (dev + prod)
 RUN pnpm install --frozen-lockfile
 
-# Copy source
+# Copy source code
 COPY . .
 
-# Build TS
+# Generate Prisma client
+RUN npx prisma generate
+
+# Build TypeScript
 RUN pnpm build
 
 # -------------------
@@ -27,22 +30,20 @@ FROM node:20-alpine
 
 WORKDIR /app
 
+# Install pnpm for runtime scripts (optional)
 RUN npm install -g pnpm
 
-# Copy package files
+# Copy package files (needed for npm scripts)
 COPY package.json pnpm-lock.yaml ./
 
-# Install only production deps
-RUN pnpm install --frozen-lockfile --prod
+# Copy built node_modules from builder (all deps included)
+COPY --from=builder /app/node_modules ./node_modules
 
 # Copy built dist
 COPY --from=builder /app/dist ./dist
 
-# Copy prisma schema
+# Copy prisma schema (optional, jika runtime butuh migration)
 COPY prisma ./prisma
-
-# Generate Prisma client in runtime
-RUN npx prisma generate
 
 # Add non-root user
 RUN addgroup -g 1001 -S nodejs && adduser -S nodejs -u 1001
